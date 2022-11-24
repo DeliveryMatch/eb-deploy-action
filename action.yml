@@ -42,6 +42,7 @@ runs:
         echo "image=$ECR_REGISTRY/$DOCKER_IMAGE" >> $GITHUB_OUTPUT
 
     - name: Generate Dockerrun.aws.json
+      shell: bash
       run: |
         sed -i='' "s/<DOCKER_IMAGE>/${{ steps.build-image.outputs.image }}/" Dockerrun.aws.json
         sed -i='' "s/<CONTAINER>/${{ env.environment-name }}-${{ env.application-name }}/" Dockerrun.aws.json
