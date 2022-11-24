@@ -46,7 +46,11 @@ runs:
       run: |
         sed -i='' "s|<DOCKER_IMAGE>|${{ steps.build-image.outputs.image }}|" Dockerrun.aws.json
         sed -i='' "s|<CONTAINER>|${{ inputs.application-name }}|" Dockerrun.aws.json
-        
+    
+    - name: Generate deployment package
+      shell: bash
+      run: zip ${{ inputs.application-name }}-${{ github.sha }}.zip Dockerrun.aws.json
+
     - name: Deploy to AWS Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
       with:
@@ -56,4 +60,4 @@ runs:
         application_name: engine-${{ inputs.application-name }}
         environment_name: ${{ inputs.environment-name }}-${{ inputs.application-name }}
         region: ${{ inputs.aws-region }}
-        deployment_package: Dockerrun.aws.json
+        deployment_package: ${{ inputs.application-name }}-${{ github.sha }}.zip
