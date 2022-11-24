@@ -36,15 +36,11 @@ runs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Test sha
-      shell: bash
-      run: echo ${{github.sha}}
-
-    # - name: Build, tag, and push image to Amazon ECR
-    #   id: build-image
-    #   env:
-    #     CR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-    #   run: |
-    #     docker build -f $REPOSITORY/Dockerfile -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
-    #     docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
-    #     echo "::set-output name=image::$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG"
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker build -f ${{ inputs.application }}/Dockerfile -t $ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }} .
+        docker push $ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }}
+        echo "::set-output name=image::$ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }}"
