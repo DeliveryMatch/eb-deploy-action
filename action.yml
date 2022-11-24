@@ -2,9 +2,6 @@
 name: "Deploy to Amazon Elastic Beanstalk"
 description: "Deploy to Amazon Elastic Beanstalk"
 
-runs:
-  using: node16
-  main: action/index.js
 inputs:
   env:
     description: "Provide the environment to deploy to [develop, release, production]"
@@ -44,4 +41,6 @@ runs:
 
       - name: Init Yii application
         run: php init --env=Production --overwrite=n
+    sing: node16
+    main: action/index.js
 
