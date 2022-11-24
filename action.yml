@@ -11,13 +11,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - uses: shivammathur/setup-php@v2
-      with:
-        php-version: "8.1"
-
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
@@ -40,5 +33,5 @@ runs:
       run: php init --env=Production --overwrite=n
 
     - name: Bump version
-      using: node16
+      uses: node16
       main: action/index.js
