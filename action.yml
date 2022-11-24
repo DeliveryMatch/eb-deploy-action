@@ -1,27 +1,21 @@
 ---
-name: "Deploy to Amazon Elastic Beanstalk"
-description: "Deploy to Amazon Elastic Beanstalk"
+name: "Deploy to AWS Elastic Beanstalk"
+description: "Deploy to AWS Elastic Beanstalk"
 
 inputs:
+  application-name:
+    description: "[frontend, api]"
+    required: true
   aws-access-key-id:
-    description: "AWS access key id"
     required: true
   aws-secret-access-key:
-    description: "AWS secret access key"
-    required: true
-  aws-region:
-    description: "AWS region"
-    required: true
-  aws-account-id:
-    description: "AWS account id"
     required: true
   environment-name:
-    description: "Environment where to deploy [develop, release, production]"
+    description: "[develop, release, production]"
     required: true
-  application-name:
-    description: "Application to deploy [frontend, api]"
+  aws-region:
     required: true
-
+  
 runs:
   using: "composite"
   steps:
@@ -47,6 +41,18 @@ runs:
         docker push $ECR_REGISTRY/$DOCKER_IMAGE
         echo "image=$ECR_REGISTRY/$DOCKER_IMAGE" >> $GITHUB_OUTPUT
 
-    - name: Test
-      shell: bash
-      run: echo ${{ steps.build-image.outputs.image }}
+    - name: Generate Dockerrun.aws.json
+      run: |
+        sed -i='' "s/<DOCKER_IMAGE>/${{ steps.build-image.outputs.image }}/" Dockerrun.aws.json
+        sed -i='' "s/<CONTAINER>/${{ env.environment-name }}-${{ env.application-name }}/" Dockerrun.aws.json
+        
+    - name: Deploy to AWS Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v21
+      with:
+        aws_access_key: ${{ inputs.aws-access-key-id }}
+        aws_secret_key: ${{ inputs.aws-secret-access-key }}
+        application_name: engine
+        environment_name: ${{ env.environment-name }}-${{ env.application-name }}
+        version_label: ${{ github.sha }}
+        region: ${{ inputs.aws-region }}
+        deployment_package: Dockerrun.aws.json
