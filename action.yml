@@ -41,6 +41,7 @@ runs:
 
       - name: Init Yii application
         run: php init --env=Production --overwrite=n
-  using: node16
-  main: action/index.js
 
+      - name: Bump version
+        using: node16
+        main: action/index.js
