@@ -37,7 +37,6 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Test sha
-      id: test sha
       shell: bash
       run: echo ${{github.sha}}
 
