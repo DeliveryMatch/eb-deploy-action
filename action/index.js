@@ -4110,12 +4110,16 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(481);
 const github = __nccwpck_require__(376);
+const { exec } = __nccwpck_require__(376);
 
 async function run() {
   try {
     const deployEnvironment = core.getInput("environment");
     const src = __dirname;
-  } catch (error) {}
+    await exec(`${src}/get_git_tag.sh`);
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
 
 run();
