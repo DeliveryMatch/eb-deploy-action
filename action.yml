@@ -45,7 +45,7 @@ runs:
       shell: bash
       run: |
         sed -i='' "s|<DOCKER_IMAGE>|${{ steps.build-image.outputs.image }}|" Dockerrun.aws.json
-        sed -i='' "s|<CONTAINER>|${{ inputs.environment-name }}-${{ inputs.application-name }}|" Dockerrun.aws.json
+        sed -i='' "s|<CONTAINER>|${{ inputs.application-name }}|" Dockerrun.aws.json
         
     - name: Deploy to AWS Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
