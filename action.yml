@@ -52,8 +52,8 @@ runs:
       with:
         aws_access_key: ${{ inputs.aws-access-key-id }}
         aws_secret_key: ${{ inputs.aws-secret-access-key }}
-        application_name: engine
-        environment_name: ${{ inputs.environment-name }}-${{ inputs.application-name }}
         version_label: ${{ github.sha }}
+        application_name: engine-${{ inputs.application-name }}
+        environment_name: ${{ inputs.environment-name }}-${{ inputs.application-name }}
         region: ${{ inputs.aws-region }}
         deployment_package: Dockerrun.aws.json
