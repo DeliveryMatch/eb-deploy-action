@@ -12,9 +12,11 @@ runs:
   using: "composite"
   steps:
     - name: Validate composer.json and composer.lock
+      shell: bash
       run: composer validate --strict
 
     - name: Cache Composer packages
+      shell: bash
       id: composer-cache
       uses: actions/cache@v3
       with:
@@ -24,12 +26,15 @@ runs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies
+      shell: bash
       run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-soap --ignore-platform-req=ext-gd
 
     - name: Create missing folders
+      shell: bash
       run: mkdir -p api/{runtime,web/assets} frontend/runtime
 
     - name: Init Yii application
+      shell: bash
       run: php init --env=Production --overwrite=n
 
   # using: node16
