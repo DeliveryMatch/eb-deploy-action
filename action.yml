@@ -15,10 +15,10 @@ inputs:
   aws-account-id:
     description: "AWS account id"
     required: true
-  environment:
+  environment-name:
     description: "Environment where to deploy [develop, release, production]"
     required: true
-  application:
+  application-name:
     description: "Application to deploy [frontend, api]"
     required: true
 
@@ -40,8 +40,9 @@ runs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        DOCKER_IMAGE: ${{ inputs.application-name }}:${{ github.sha }}
       shell: bash
       run: |
-        docker build -f ${{ inputs.application }}/Dockerfile -t $ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }} .
-        docker push $ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }}
-        echo "::set-output name=image::$ECR_REGISTRY/${{ inputs.application }}:${{ github.sha }}"
+        docker build -f ${{ inputs.application-name }}/Dockerfile -t $ECR_REGISTRY/$DOCKER_IMAGE .
+        docker push $ECR_REGISTRY/$DOCKER_IMAGE
+        echo "image=$ECR_REGISTRY/$DOCKER_IMAGE" >> $GITHUB_OUTPUT
