@@ -32,10 +32,10 @@ runs:
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
+      shell: bash
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         DOCKER_IMAGE: ${{ inputs.application-name }}:${{ github.sha }}
-      shell: bash
       run: |
         docker build -f ${{ inputs.application-name }}/Dockerfile -t $ECR_REGISTRY/$DOCKER_IMAGE .
         docker push $ECR_REGISTRY/$DOCKER_IMAGE
@@ -44,8 +44,8 @@ runs:
     - name: Generate Dockerrun.aws.json
       shell: bash
       run: |
-        sed -i='' "s/<DOCKER_IMAGE>/${{ steps.build-image.outputs.image }}/" Dockerrun.aws.json
-        sed -i='' "s/<CONTAINER>/${{ inputs.environment-name }}-${{ inputs.application-name }}/" Dockerrun.aws.json
+        sed -i='' "s/<DOCKER_IMAGE>/${{ steps.build-image.outputs.image }}/g" Dockerrun.aws.json
+        sed -i='' "s/<CONTAINER>/${{ inputs.environment-name }}-${{ inputs.application-name }}/g" Dockerrun.aws.json
         
     - name: Deploy to AWS Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
