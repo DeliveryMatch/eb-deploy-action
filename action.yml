@@ -1,0 +1,47 @@
+---
+name: "Deploy to Amazon Elastic Beanstalk"
+description: "Deploy to Amazon Elastic Beanstalk"
+
+runs:
+  using: node16
+  main: action/index.js
+inputs:
+  env:
+    description: "Provide the environment to deploy to [develop, release, production]"
+    required: true
+    default: develop
+
+runs:
+  using: "composite"
+  steps:
+      name: Deploy to Amazon Beanstalk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-soap --ignore-platform-req=ext-gd
+
+      - name: Create missing folders
+        run: mkdir -p api/{runtime,web/assets} frontend/runtime
+
+      - name: Init Yii application
+        run: php init --env=Production --overwrite=n
+
