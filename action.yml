@@ -43,6 +43,10 @@ runs:
         DOCKER_IMAGE: ${{ inputs.application-name }}:${{ github.sha }}
       shell: bash
       run: |
-        docker build -f ${{ inputs.application }}/Dockerfile -t $ECR_REGISTRY/$DOCKER_IMAGE .
+        docker build -f ${{ inputs.application-name }}/Dockerfile -t $ECR_REGISTRY/$DOCKER_IMAGE .
         docker push $ECR_REGISTRY/$DOCKER_IMAGE
         echo "image=$ECR_REGISTRY/$DOCKER_IMAGE" >> $GITHUB_OUTPUT
+
+    - name: Test
+      shell: bash
+      run: echo ${{ steps.build-image.outputs.image }}
