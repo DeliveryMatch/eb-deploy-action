@@ -47,7 +47,9 @@ runs:
     
     - name: Generate deployment package
       shell: bash
-      run: zip -j ${{ github.sha }}.zip ${{ inputs.application-name }}/Dockerrun.aws.json
+      run: |
+        zip -j ${{ github.sha }}.zip ${{ inputs.application-name }}/Dockerrun.aws.json
+        zip ${{ github.sha }}.zip .ebextensions/*
 
     - name: Deploy to AWS Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
